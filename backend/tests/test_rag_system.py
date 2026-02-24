@@ -16,10 +16,10 @@ from unittest.mock import MagicMock, patch
 from rag_system import RAGSystem
 from search_tools import CourseSearchTool
 
-
 # ---------------------------------------------------------------------------
 # Fixture
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def rag():
@@ -29,13 +29,15 @@ def rag():
     We patch the constructor dependencies so RAGSystem.__init__ never touches
     real ChromaDB, real Anthropic, or the filesystem.
     """
-    with patch("rag_system.DocumentProcessor"), \
-         patch("rag_system.VectorStore"), \
-         patch("rag_system.AIGenerator") as MockAI, \
-         patch("rag_system.SessionManager") as MockSession, \
-         patch("rag_system.ToolManager") as MockTM, \
-         patch("rag_system.CourseSearchTool") as MockCST, \
-         patch("rag_system.CourseOutlineTool"):
+    with (
+        patch("rag_system.DocumentProcessor"),
+        patch("rag_system.VectorStore"),
+        patch("rag_system.AIGenerator") as MockAI,
+        patch("rag_system.SessionManager") as MockSession,
+        patch("rag_system.ToolManager") as MockTM,
+        patch("rag_system.CourseSearchTool") as MockCST,
+        patch("rag_system.CourseOutlineTool"),
+    ):
 
         from dataclasses import dataclass
 
@@ -65,7 +67,9 @@ def rag():
     system._mock_ai.generate_response.return_value = "AI answer"
     system._mock_session.get_conversation_history.return_value = None
     system._mock_tm.get_last_sources.return_value = []
-    system._mock_tm.get_tool_definitions.return_value = [{"name": "search_course_content"}]
+    system._mock_tm.get_tool_definitions.return_value = [
+        {"name": "search_course_content"}
+    ]
 
     return system
 
@@ -73,6 +77,7 @@ def rag():
 # ---------------------------------------------------------------------------
 # Prompt construction
 # ---------------------------------------------------------------------------
+
 
 class TestRAGQueryPrompt:
 
@@ -86,7 +91,9 @@ class TestRAGQueryPrompt:
         rag.query("What is 2 + 2?")
 
         call_kwargs = rag._mock_ai.generate_response.call_args.kwargs
-        prompt_sent = call_kwargs.get("query") or rag._mock_ai.generate_response.call_args.args[0]
+        prompt_sent = (
+            call_kwargs.get("query") or rag._mock_ai.generate_response.call_args.args[0]
+        )
         assert "What is 2 + 2?" in prompt_sent
         assert "course materials" in prompt_sent.lower()
 
@@ -94,7 +101,9 @@ class TestRAGQueryPrompt:
         rag.query("Explain RAG in detail")
 
         call_kwargs = rag._mock_ai.generate_response.call_args.kwargs
-        prompt = call_kwargs.get("query") or rag._mock_ai.generate_response.call_args.args[0]
+        prompt = (
+            call_kwargs.get("query") or rag._mock_ai.generate_response.call_args.args[0]
+        )
         assert "Explain RAG in detail" in prompt
 
     def test_tool_definitions_passed_to_generator(self, rag):
@@ -114,6 +123,7 @@ class TestRAGQueryPrompt:
 # ---------------------------------------------------------------------------
 # Return values
 # ---------------------------------------------------------------------------
+
 
 class TestRAGQueryReturnValues:
 
@@ -151,6 +161,7 @@ class TestRAGQueryReturnValues:
 # Sources lifecycle
 # ---------------------------------------------------------------------------
 
+
 class TestRAGSourcesLifecycle:
 
     def test_tool_manager_get_last_sources_called_once(self, rag):
@@ -170,14 +181,16 @@ class TestRAGSourcesLifecycle:
 
         rag.query("q")
 
-        assert call_order == ["get", "reset"], (
-            f"Expected ['get', 'reset'] but got {call_order}"
-        )
+        assert call_order == [
+            "get",
+            "reset",
+        ], f"Expected ['get', 'reset'] but got {call_order}"
 
 
 # ---------------------------------------------------------------------------
 # Session / conversation history
 # ---------------------------------------------------------------------------
+
 
 class TestRAGSessionHistory:
 
@@ -186,14 +199,18 @@ class TestRAGSessionHistory:
         rag._mock_session.get_conversation_history.assert_not_called()
 
     def test_history_fetched_for_given_session_id(self, rag):
-        rag._mock_session.get_conversation_history.return_value = "User: hi\nAssistant: hello"
+        rag._mock_session.get_conversation_history.return_value = (
+            "User: hi\nAssistant: hello"
+        )
 
         rag.query("q", session_id="session_1")
 
         rag._mock_session.get_conversation_history.assert_called_once_with("session_1")
 
     def test_history_passed_to_ai_generator(self, rag):
-        rag._mock_session.get_conversation_history.return_value = "User: hi\nAssistant: hello"
+        rag._mock_session.get_conversation_history.return_value = (
+            "User: hi\nAssistant: hello"
+        )
 
         rag.query("q", session_id="session_1")
 
@@ -223,6 +240,7 @@ class TestRAGSessionHistory:
 # ---------------------------------------------------------------------------
 # General-knowledge vs content queries (prompt framing issue)
 # ---------------------------------------------------------------------------
+
 
 class TestRAGQueryFraming:
 

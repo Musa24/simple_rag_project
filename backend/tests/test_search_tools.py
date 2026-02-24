@@ -12,10 +12,10 @@ from unittest.mock import MagicMock, call
 from vector_store import SearchResults
 from search_tools import CourseSearchTool, ToolManager
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def make_results(docs, metas, distances=None):
     """Build a non-empty SearchResults with sensible defaults."""
@@ -37,6 +37,7 @@ def error_results(msg):
 # ---------------------------------------------------------------------------
 # CourseSearchTool.execute() – success paths
 # ---------------------------------------------------------------------------
+
 
 class TestCourseSearchToolExecuteSuccess:
 
@@ -93,7 +94,7 @@ class TestCourseSearchToolExecuteSuccess:
         """When metadata has no 'lesson_number', header must not include 'Lesson'."""
         self.store.search.return_value = make_results(
             docs=["Content"],
-            metas=[{"course_title": "Course A"}],   # no lesson_number key
+            metas=[{"course_title": "Course A"}],  # no lesson_number key
         )
         self.store.get_lesson_link.return_value = None
 
@@ -137,6 +138,7 @@ class TestCourseSearchToolExecuteSuccess:
 # CourseSearchTool.execute() – store call arguments
 # ---------------------------------------------------------------------------
 
+
 class TestCourseSearchToolStoreArgs:
 
     def setup_method(self):
@@ -171,6 +173,7 @@ class TestCourseSearchToolStoreArgs:
 # ---------------------------------------------------------------------------
 # CourseSearchTool.execute() – empty / error results
 # ---------------------------------------------------------------------------
+
 
 class TestCourseSearchToolEmptyAndError:
 
@@ -216,6 +219,7 @@ class TestCourseSearchToolEmptyAndError:
 # ---------------------------------------------------------------------------
 # CourseSearchTool – last_sources tracking
 # ---------------------------------------------------------------------------
+
 
 class TestCourseSearchToolSources:
 
@@ -281,7 +285,7 @@ class TestCourseSearchToolSources:
             metas=[{"course_title": "Old Course", "lesson_number": 1}],
         )
         self.store.get_lesson_link.return_value = None
-        self.tool.execute(query="first query")          # populates last_sources
+        self.tool.execute(query="first query")  # populates last_sources
 
         self.store.search.return_value = empty_results()
         self.tool.execute(query="second query - no results")
@@ -293,6 +297,7 @@ class TestCourseSearchToolSources:
 # ---------------------------------------------------------------------------
 # ToolManager
 # ---------------------------------------------------------------------------
+
 
 class TestToolManager:
 
@@ -336,7 +341,9 @@ class TestToolManager:
     def test_get_last_sources_returns_sources_from_course_search_tool(self):
         mock_store = MagicMock()
         search_tool = CourseSearchTool(mock_store)
-        search_tool.last_sources = [{"label": "Course A - Lesson 1", "url": "http://x.com"}]
+        search_tool.last_sources = [
+            {"label": "Course A - Lesson 1", "url": "http://x.com"}
+        ]
         self.manager.register_tool(search_tool)
 
         sources = self.manager.get_last_sources()
