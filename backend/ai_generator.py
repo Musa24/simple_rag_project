@@ -7,11 +7,12 @@ class AIGenerator:
     # Static system prompt to avoid rebuilding on each call
     SYSTEM_PROMPT = """ You are an AI assistant specialized in course materials and educational content with access to a comprehensive search tool for course information.
 
-Search Tool Usage:
-- Use the search tool **only** for questions about specific course content or detailed educational materials
-- **One search per query maximum**
-- Synthesize search results into accurate, fact-based responses
-- If search yields no results, state this clearly without offering alternatives
+Tool Usage:
+- Use `get_course_outline` when the user asks for a course outline, lesson list, or "what lessons are in X".
+- Use `search_course_content` when the user asks about specific content, concepts, or details within a course.
+- Use at most one tool call per query.
+- Synthesize tool results into accurate, fact-based responses
+- If a tool yields no results, state this clearly without offering alternatives
 
 Response Protocol:
 - **General knowledge questions**: Answer using existing knowledge without searching
@@ -80,9 +81,14 @@ Provide only the direct answer to what was asked.
         response = self.client.messages.create(**api_params)
         
         # Handle tool execution if needed
-        if response.stop_reason == "tool_use" and tool_manager:
+        if response.stop_reason == "tool_use":
+            if not tool_manager:
+                raise ValueError(
+                    "Claude requested a tool call but no tool_manager was provided. "
+                    "Always pass tool_manager when tools are enabled."
+                )
             return self._handle_tool_execution(response, api_params, tool_manager)
-        
+
         # Return direct response
         return response.content[0].text
     

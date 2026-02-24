@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     createNewSession();
     loadCourseStats();
+
+    document.getElementById('newChatBtn').addEventListener('click', async () => {
+        if (currentSessionId) {
+            fetch(`/api/session/${currentSessionId}`, { method: 'DELETE' }).catch(() => {});
+        }
+        createNewSession();
+    });
 });
 
 // Event Listeners
@@ -122,10 +129,17 @@ function addMessage(content, type, sources = null, isWelcome = false) {
     let html = `<div class="message-content">${displayContent}</div>`;
     
     if (sources && sources.length > 0) {
+        const sourceChips = sources.map(s => {
+            const label = s.label || s;
+            const url = s.url;
+            return url
+                ? '<a class="source-chip" href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>'
+                : '<span class="source-chip source-chip--no-link">' + label + '</span>';
+        }).join('');
         html += `
             <details class="sources-collapsible">
                 <summary class="sources-header">Sources</summary>
-                <div class="sources-content">${sources.join(', ')}</div>
+                <div class="sources-content">${sourceChips}</div>
             </details>
         `;
     }
