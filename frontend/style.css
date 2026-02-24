@@ -22,6 +22,63 @@
     --focus-ring: rgba(37, 99, 235, 0.2);
     --welcome-bg: #1e3a5f;
     --welcome-border: #2563eb;
+    --code-bg: rgba(0, 0, 0, 0.2);
+    --chip-link-color: #60a5fa;
+    --chip-link-border: #1e3a5f;
+    --chip-link-bg: #0f2040;
+    --chip-link-hover-bg: #1e3a6e;
+    --chip-link-hover-color: #93c5fd;
+    --chip-link-hover-border: #3b82f6;
+    --toggle-bg: #1e293b;
+    --toggle-color: #94a3b8;
+}
+
+/* Light Theme */
+body[data-theme="light"] {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --surface-hover: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --user-message: #2563eb;
+    --assistant-message: #f1f5f9;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --focus-ring: rgba(37, 99, 235, 0.2);
+    --welcome-bg: #dbeafe;
+    --welcome-border: #2563eb;
+    --code-bg: rgba(0, 0, 0, 0.06);
+    --chip-link-color: #2563eb;
+    --chip-link-border: #bfdbfe;
+    --chip-link-bg: #eff6ff;
+    --chip-link-hover-bg: #dbeafe;
+    --chip-link-hover-color: #1d4ed8;
+    --chip-link-hover-border: #3b82f6;
+    --toggle-bg: #e2e8f0;
+    --toggle-color: #475569;
+}
+
+/* Theme Transitions */
+body,
+.sidebar,
+.main-content,
+.chat-main,
+.chat-container,
+.chat-messages,
+.message-content,
+.chat-input-container,
+#chatInput,
+.stat-item,
+.suggested-item,
+.source-chip,
+.theme-toggle,
+.new-chat-btn,
+.stats-header,
+.suggested-header,
+.course-title-item {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Base Styles */
@@ -257,21 +314,21 @@ header h1 {
     white-space: nowrap;
     text-decoration: none;
     border: 1px solid var(--border-color);
-    background: #1e293b;
+    background: var(--surface);
     color: var(--text-secondary);
     transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 a.source-chip {
-    color: #60a5fa;
-    border-color: #1e3a5f;
-    background: #0f2040;
+    color: var(--chip-link-color);
+    border-color: var(--chip-link-border);
+    background: var(--chip-link-bg);
 }
 
 a.source-chip:hover {
-    background: #1e3a6e;
-    color: #93c5fd;
-    border-color: #3b82f6;
+    background: var(--chip-link-hover-bg);
+    color: var(--chip-link-hover-color);
+    border-color: var(--chip-link-hover-border);
 }
 
 .source-chip--no-link {
@@ -310,7 +367,7 @@ a.source-chip:hover {
 }
 
 .message-content code {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--code-bg);
     padding: 0.125rem 0.25rem;
     border-radius: 3px;
     font-family: 'Fira Code', 'Consolas', monospace;
@@ -318,7 +375,7 @@ a.source-chip:hover {
 }
 
 .message-content pre {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--code-bg);
     padding: 0.75rem;
     border-radius: 4px;
     overflow-x: auto;
@@ -768,4 +825,52 @@ details[open] .suggested-header::before {
     .sidebar {
         width: 280px;
     }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--toggle-bg);
+    color: var(--toggle-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.theme-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+/* Show moon icon in dark mode (default), sun icon in light mode */
+.theme-toggle .moon-icon {
+    display: block;
+}
+
+.theme-toggle .sun-icon {
+    display: none;
+}
+
+body[data-theme="light"] .theme-toggle .moon-icon {
+    display: none;
+}
+
+body[data-theme="light"] .theme-toggle .sun-icon {
+    display: block;
 }
