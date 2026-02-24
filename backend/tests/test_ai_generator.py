@@ -14,10 +14,10 @@ from unittest.mock import MagicMock, patch, call
 # conftest.py has already mocked 'anthropic' and added backend/ to sys.path.
 from ai_generator import AIGenerator
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def make_text_block(text="Answer text"):
     """Simulate a real Anthropic TextBlock (has .type and .text)."""
@@ -27,7 +27,9 @@ def make_text_block(text="Answer text"):
     return block
 
 
-def make_tool_use_block(tool_name="search_course_content", inputs=None, tool_id="toolu_01"):
+def make_tool_use_block(
+    tool_name="search_course_content", inputs=None, tool_id="toolu_01"
+):
     """Simulate a real Anthropic ToolUseBlock (has .type, .name, .id, .input)."""
     block = MagicMock()
     block.type = "tool_use"
@@ -43,6 +45,7 @@ class RealToolUseBlock:
     content block.  It deliberately has NO '.text' attribute so that accessing
     .text raises AttributeError (just like the real Anthropic SDK object).
     """
+
     type = "tool_use"
     id = "toolu_real"
     name = "search_course_content"
@@ -61,6 +64,7 @@ def api_response(stop_reason="end_turn", content_blocks=None):
 # Fixture
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def gen():
     """Return an AIGenerator whose Anthropic client is fully mocked."""
@@ -72,6 +76,7 @@ def gen():
 # ---------------------------------------------------------------------------
 # Direct response (no tool use)
 # ---------------------------------------------------------------------------
+
 
 class TestDirectResponse:
 
@@ -134,6 +139,7 @@ class TestDirectResponse:
 # API parameter construction for tools
 # ---------------------------------------------------------------------------
 
+
 class TestToolParameters:
 
     def test_tools_added_when_provided(self, gen):
@@ -177,6 +183,7 @@ class TestToolParameters:
 # Two-pass tool-use flow
 # ---------------------------------------------------------------------------
 
+
 class TestToolUseFlow:
 
     def test_two_api_calls_when_tool_use(self, gen):
@@ -188,7 +195,9 @@ class TestToolUseFlow:
         mock_tm = MagicMock()
         mock_tm.execute_tool.return_value = "Vector store results"
 
-        gen.generate_response(query="q", tools=[{"name": "search_course_content"}], tool_manager=mock_tm)
+        gen.generate_response(
+            query="q", tools=[{"name": "search_course_content"}], tool_manager=mock_tm
+        )
 
         assert gen.client.messages.create.call_count == 2
 
@@ -257,7 +266,9 @@ class TestToolUseFlow:
         mock_tm = MagicMock()
         mock_tm.execute_tool.return_value = "results"
 
-        gen.generate_response(query="q", tools=[{"name": "search_course_content"}], tool_manager=mock_tm)
+        gen.generate_response(
+            query="q", tools=[{"name": "search_course_content"}], tool_manager=mock_tm
+        )
 
         second_kwargs = gen.client.messages.create.call_args_list[1].kwargs
         assert "tools" not in second_kwargs
@@ -267,6 +278,7 @@ class TestToolUseFlow:
 # ---------------------------------------------------------------------------
 # Latent bug: tool_use response with no tool_manager
 # ---------------------------------------------------------------------------
+
 
 class TestToolUseWithoutToolManager:
 
